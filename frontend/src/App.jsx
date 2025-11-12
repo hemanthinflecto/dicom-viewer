@@ -24,6 +24,9 @@ function App() {
   const [windowCenter, setWindowCenter] = useState(50);
   const [isInverted, setIsInverted] = useState(false);
   const [error, setError] = useState(null);
+  const [perplexityResult, setPerplexityResult] = useState(null);
+  const [perplexityError, setPerplexityError] = useState(null);
+  const [isPerplexityAnalyzing, setIsPerplexityAnalyzing] = useState(false);
 
   // Custom hooks
   const viewport = useCornerstoneViewport('CT_VIEWPORT');
@@ -135,11 +138,32 @@ function App() {
   // Handle file upload
   const handleFileUpload = async (event) => {
     setError(null);
+    setPerplexityError(null);
+    setPerplexityResult(null);
     try {
       await dicomLoader.loadFiles(event.target.files);
     } catch (err) {
       setError(err.message);
     }
+  };
+
+  const captureCurrentSliceAsBase64 = () => {
+    const viewportInstance = viewport.getViewport();
+    if (!viewportInstance) {
+      throw new Error('Viewport is not ready. Load a DICOM file first.');
+    }
+
+    const canvas = viewportInstance.getCanvas();
+    if (!canvas) {
+      throw new Error('Unable to capture the current slice.');
+    }
+
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+    const parts = dataUrl.split(',');
+    if (parts.length !== 2) {
+      throw new Error('Failed to convert slice to JPEG.');
+    }
+    return parts[1];
   };
 
   // Handle window/level change
@@ -160,6 +184,47 @@ function App() {
   // Handle sharpen (placeholder)
   const handleSharpen = () => {
     alert('Sharpen filter coming soon!');
+  };
+
+  const handlePerplexityAnalyze = async () => {
+    if (dicomLoader.imageIds.length === 0) {
+      setPerplexityError('Please upload and display a DICOM slice before requesting analysis.');
+      return;
+    }
+
+    setIsPerplexityAnalyzing(true);
+    setPerplexityError(null);
+
+    try {
+      const base64Slice = captureCurrentSliceAsBase64();
+
+      const response = await fetch('http://localhost:3001/api/perplexity/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          imageBase64: base64Slice
+        })
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload?.message || 'Perplexity analysis failed.');
+      }
+
+      setPerplexityResult({
+        description: payload.description,
+        diagnosis: payload.diagnosis,
+        disclaimer: payload.disclaimer
+      });
+    } catch (err) {
+      console.error('Perplexity analysis error:', err);
+      setPerplexityError(err.message || 'Unexpected error while contacting Perplexity.');
+    } finally {
+      setIsPerplexityAnalyzing(false);
+    }
   };
 
   // Handle clear measurements
@@ -207,6 +272,83 @@ function App() {
                 onNext={dicomLoader.nextImage}
                 onSliceChange={dicomLoader.setCurrentImageIndex}
               />
+            )}
+
+            {/* Perplexity AI Insights */}
+            {dicomLoader.imageIds.length > 0 && (
+              <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700 space-y-4">
+                <div>
+                  <h2 className="text-xl font-semibold text-white">AI Insights (Perplexity)</h2>
+                  <p className="text-slate-400 text-sm mt-1">
+                    Generate a concise description and diagnostic considerations for the current slice.
+                  </p>
+                </div>
+
+                <button
+                  onClick={handlePerplexityAnalyze}
+                  disabled={isPerplexityAnalyzing}
+                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
+                >
+                  {isPerplexityAnalyzing ? (
+                    <>
+                      <svg
+                        className="animate-spin h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      <span>Analyzing slice...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span role="img" aria-label="sparkles">
+                        ✨
+                      </span>
+                      <span>Analyze Current Slice</span>
+                    </>
+                  )}
+                </button>
+
+                {perplexityError && (
+                  <div className="bg-red-900/50 border border-red-700 text-red-200 text-sm rounded-lg px-3 py-2">
+                    {perplexityError}
+                  </div>
+                )}
+
+                {perplexityResult && (
+                  <div className="bg-slate-700/40 border border-slate-600 rounded-lg p-4 space-y-3 text-sm">
+                    <div>
+                      <h3 className="text-slate-300 font-semibold uppercase tracking-wide text-xs">
+                        Description
+                      </h3>
+                      <p className="text-slate-200 leading-relaxed">{perplexityResult.description}</p>
+                    </div>
+                    <div>
+                      <h3 className="text-slate-300 font-semibold uppercase tracking-wide text-xs">
+                        Diagnostic Considerations
+                      </h3>
+                      <p className="text-slate-200 leading-relaxed">{perplexityResult.diagnosis}</p>
+                    </div>
+                    <div className="text-xs text-slate-400 border-t border-slate-600 pt-2">
+                      {perplexityResult.disclaimer}
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
 
             {/* Measurements Panel */}

@@ -1,6 +1,6 @@
 # DICOM Medical Imaging Viewer with AI Analysis
 
-A modern web application for viewing DICOM medical scans with AI-powered analysis using OpenAI's Vision API.
+A modern web application for viewing DICOM medical scans with AI-powered analysis using Perplexity’s multimodal API.
 
 ## 🏗️ Architecture
 
@@ -12,8 +12,7 @@ A modern web application for viewing DICOM medical scans with AI-powered analysi
 
 ### Backend (Node.js + Express)
 - RESTful API for image analysis
-- OpenAI GPT-4 Vision integration
-- Secure file handling with Multer
+- Perplexity vision-model integration
 - CORS-enabled for local development
 
 ## 📋 Features
@@ -21,8 +20,8 @@ A modern web application for viewing DICOM medical scans with AI-powered analysi
 ✅ Upload and view DICOM (.dcm) files
 ✅ Interactive medical image viewer powered by Cornerstone.js
 ✅ Capture current slice as PNG
-✅ AI-powered medical image analysis
-✅ Structured insights (findings, observations, recommendations)
+✅ AI-powered medical image analysis (Perplexity Vision)
+✅ Structured insights (description, diagnostic considerations, disclaimers)
 ✅ Beautiful, modern UI with dark theme
 ✅ Responsive design for all screen sizes
 
@@ -32,7 +31,7 @@ A modern web application for viewing DICOM medical scans with AI-powered analysi
 
 - **Node.js** (v18 or higher)
 - **npm** or **yarn**
-- **OpenAI API Key** - Get one from [OpenAI Platform](https://platform.openai.com/api-keys)
+- **Perplexity API Key** - Available via the [Perplexity AI dashboard](https://www.perplexity.ai/hub)
 
 ### Installation
 
@@ -52,8 +51,8 @@ npm install
 # Create .env file from template
 cp .env.example .env
 
-# Edit .env and add your OpenAI API key
-# OPENAI_API_KEY=sk-your-actual-api-key-here
+# Edit .env and add your API key
+# PERPLEXITY_API_KEY=pplx-your-perplexity-key
 ```
 
 #### 3. Setup Frontend
@@ -90,8 +89,8 @@ Frontend will run on: `http://localhost:3000`
 1. Open your browser and navigate to `http://localhost:3000`
 2. Click "Upload Scan" and select a DICOM (.dcm) file
 3. The image will be displayed in the DICOM viewer
-4. Click "Analyze Current Slice" to get AI-powered insights
-5. View the analysis results in the left panel
+4. Click "Analyze Current Slice" in the Perplexity AI panel to get AI-generated insights
+5. View the description, diagnostic considerations, and disclaimers in the left panel
 
 ## 📁 Project Structure
 
@@ -118,28 +117,6 @@ dicom-viewer/
 
 ### Backend API
 
-#### `POST /api/analyze`
-Analyze a medical image slice using OpenAI Vision API
-
-**Request:**
-- Method: `POST`
-- Content-Type: `multipart/form-data`
-- Body: `image` (PNG file)
-
-**Response:**
-```json
-{
-  "success": true,
-  "findings": "Description of the scan",
-  "observations": [
-    "Key observation 1",
-    "Key observation 2"
-  ],
-  "recommendations": "Clinical recommendations",
-  "disclaimer": "AI-generated analysis disclaimer"
-}
-```
-
 #### `GET /health`
 Health check endpoint
 
@@ -148,6 +125,29 @@ Health check endpoint
 {
   "status": "ok",
   "message": "Backend server is running"
+}
+```
+
+#### `POST /api/perplexity/analyze`
+Analyze the currently viewed DICOM slice using Perplexity's multimodal API.
+
+**Request:**
+- Method: `POST`
+- Content-Type: `application/json`
+- Body:
+```json
+{
+  "imageBase64": "<Base64-encoded JPEG of the slice>"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "description": "Concise description of anatomy or findings.",
+  "diagnosis": "Diagnostic considerations or differential diagnosis.",
+  "disclaimer": "Professional disclaimer regarding AI-generated content."
 }
 ```
 
@@ -163,8 +163,7 @@ Health check endpoint
 ### Backend
 - **Node.js** - Runtime environment
 - **Express 4.21** - Web framework
-- **OpenAI API 4.73** - AI analysis
-- **Multer** - File upload handling
+- **Perplexity API** - Vision analysis
 - **CORS** - Cross-origin resource sharing
 - **dotenv** - Environment variable management
 
@@ -175,24 +174,22 @@ Health check endpoint
 Create a `.env` file in the `backend` directory:
 
 ```env
-OPENAI_API_KEY=your_openai_api_key_here
+PERPLEXITY_API_KEY=your_perplexity_api_key_here
 PORT=3001
 ```
 
-### OpenAI API Key
+### Perplexity API Key
 
-1. Sign up at [OpenAI Platform](https://platform.openai.com/)
-2. Navigate to [API Keys](https://platform.openai.com/api-keys)
-3. Create a new API key
-4. Add it to your `.env` file
+1. Visit the [Perplexity AI dashboard](https://www.perplexity.ai/hub)
+2. Generate a new API key
+3. Add it as `PERPLEXITY_API_KEY` in your `.env`
 
-**Note:** OpenAI API usage is billed. Check [OpenAI Pricing](https://openai.com/pricing) for current rates.
+**Note:** Perplexity usage may incur costs—review your plan for details.
 
 ## 🔐 Security Notes
 
 - Never commit `.env` files to version control
-- Keep your OpenAI API key secure
-- The backend automatically cleans up uploaded files after analysis
+- Keep your Perplexity API key secure
 - Add rate limiting for production deployments
 - Implement authentication for production use
 
