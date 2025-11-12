@@ -1,0 +1,35 @@
+graph TB
+    subgraph "Frontend - React + Vite + Tailwind"
+        A[User Browser] --> B[Upload DICOM File]
+        B --> C[Cornerstone.js Viewer]
+        C --> D[Display Medical Image]
+        D --> E[Capture Current Slice]
+        E --> F[Extract PNG from Canvas]
+    end
+    
+    subgraph "Backend - Node.js + Express"
+        G[API Endpoint /api/analyze]
+        H[Multer File Handler]
+        I[Convert to Base64]
+        J[OpenAI API Call]
+        K[Parse JSON Response]
+    end
+    
+    subgraph "OpenAI"
+        L[GPT-4 Vision API]
+        M[Medical Image Analysis]
+    end
+    
+    F -->|POST multipart/form-data| G
+    G --> H
+    H --> I
+    I --> J
+    J --> L
+    L --> M
+    M --> K
+    K -->|JSON Response| D
+    
+    style A fill:#e1f5ff
+    style C fill:#bbdefb
+    style L fill:#fff9c4
+    style G fill:#c8e6c9
