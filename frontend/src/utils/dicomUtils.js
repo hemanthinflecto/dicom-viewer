@@ -15,7 +15,9 @@ export const extractZipFile = async (file) => {
         const arrayBuffer = await zipEntry.async('arraybuffer');
         const blob = new Blob([arrayBuffer], { type: 'application/dicom' });
         const fileObj = new File([blob], filename, { type: 'application/dicom' });
-        files.push(fileObj);
+        if(!fileObj.name.startsWith('__MACOSX')) {
+          files.push(fileObj);
+        }
       }
     }
     

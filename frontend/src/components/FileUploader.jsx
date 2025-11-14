@@ -19,10 +19,10 @@ export const FileUploader = ({ onFileSelect, isLoading, fileCount, currentIndex 
                   </>
                 ) : (
                   <>
-                    Click to upload ZIP or DICOM files
+                    Click to upload ZIP files
                     <br />
                     <span className="text-xs text-slate-400">
-                      Supports .dcm, .dicom, .zip
+                      Supports .zip
                     </span>
                   </>
                 )}

@@ -59,17 +59,12 @@ const ensureToolInGroup = (toolGroup, toolName) => {
 const applyToolBindings = (toolGroup, toolId) => {
   if (!toolGroup) return;
 
-  // Keep mouse wheel stack scrolling enabled
+  // Keep mouse wheel stack scrolling enabled (tool should already be added during init)
   try {
-    toolGroup.addTool(StackScrollMouseWheelTool.toolName);
+    toolGroup.setToolEnabled(StackScrollMouseWheelTool.toolName);
   } catch (error) {
-    const message = error?.message || '';
-    if (!message.includes('already been added')) {
-      console.warn('[useToolManager] Unable to add stack scroll mouse wheel tool:', error);
-    }
+    console.warn('[useToolManager] Unable to enable stack scroll mouse wheel tool:', error);
   }
-
-  toolGroup.setToolEnabled(StackScrollMouseWheelTool.toolName);
 
   // Deactivate all interactive tools first
   TOOL_DEFINITIONS.forEach(({ ToolClass }) => {
