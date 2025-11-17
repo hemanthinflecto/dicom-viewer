@@ -3,19 +3,14 @@ import React from 'react';
 const ToolButton = ({ active, onClick, children, title, shortcut = null }) => (
   <button
     onClick={onClick}
-    title={`${title}${shortcut ? ` (${shortcut})` : ''}`}
-    className={`px-3 py-1.5 rounded text-sm font-medium transition-colors relative group ${
+    title={title}
+    className={`px-2 py-0.5 rounded text-xs font-medium transition-colors relative group ${
       active
         ? 'bg-blue-600 text-white shadow-lg'
         : 'bg-slate-600 text-slate-300 hover:bg-slate-500'
     }`}
   >
     {children}
-    {shortcut && (
-      <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-slate-900 text-slate-200 text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-        {shortcut}
-      </span>
-    )}
   </button>
 );
 
@@ -31,8 +26,8 @@ export const Toolbar = ({ activeTool, onToolChange, onResetView }) => {
   ];
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <div className="flex items-center space-x-2 bg-slate-700/50 rounded-lg p-2">
+    <div className="flex flex-wrap items-center gap-1">
+      <div className="flex items-center space-x-1 bg-slate-700/50 rounded-lg p-1">
         {tools.map((tool) => (
           <ToolButton
             key={tool.id}
@@ -41,18 +36,17 @@ export const Toolbar = ({ activeTool, onToolChange, onResetView }) => {
             title={tool.label}
             shortcut={tool.shortcut}
           >
-            <span className="mr-1">{tool.icon}</span>
-            {tool.label}
+            <span>{tool.icon}</span>
           </ToolButton>
         ))}
       </div>
 
       <button
         onClick={onResetView}
-        className="px-3 py-1.5 rounded text-sm font-medium bg-slate-600 text-slate-300 hover:bg-slate-500 transition-colors"
+        className="px-2 py-0.5 rounded text-xs font-medium bg-slate-600 text-slate-300 hover:bg-slate-500 transition-colors"
         title="Reset View"
       >
-        🔄 Reset
+        🔄
       </button>
     </div>
   );
