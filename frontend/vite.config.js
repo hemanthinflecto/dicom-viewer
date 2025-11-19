@@ -9,6 +9,31 @@ export default defineConfig({
     host: true
   },
   optimizeDeps: {
-    include: ['@cornerstonejs/core', '@cornerstonejs/tools', '@cornerstonejs/dicom-image-loader']
+    include: [
+      '@cornerstonejs/core',
+      '@cornerstonejs/tools',
+      '@cornerstonejs/dicom-image-loader',
+      'dicom-parser'
+    ],
+    esbuildOptions: {
+      target: 'esnext'
+    }
+  },
+  build: {
+    target: 'esnext',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          cornerstone: [
+            '@cornerstonejs/core',
+            '@cornerstonejs/tools',
+            '@cornerstonejs/dicom-image-loader'
+          ]
+        }
+      }
+    }
+  },
+  worker: {
+    format: 'es'
   }
 })
