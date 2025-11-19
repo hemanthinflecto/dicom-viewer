@@ -23,12 +23,17 @@ export default defineConfig({
     target: 'esnext',
     rollupOptions: {
       output: {
-        manualChunks: {
-          cornerstone: [
-            '@cornerstonejs/core',
-            '@cornerstonejs/tools',
-            '@cornerstonejs/dicom-image-loader'
-          ]
+        // Don't bundle cornerstone libraries together to avoid circular dependency issues
+        manualChunks(id) {
+          if (id.includes('@cornerstonejs/core')) {
+            return 'cornerstone-core'
+          }
+          if (id.includes('@cornerstonejs/tools')) {
+            return 'cornerstone-tools'
+          }
+          if (id.includes('@cornerstonejs/dicom-image-loader')) {
+            return 'cornerstone-loader'
+          }
         }
       }
     }
