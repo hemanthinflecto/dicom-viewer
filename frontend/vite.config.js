@@ -21,18 +21,37 @@ export default defineConfig({
   },
   build: {
     target: 'esnext',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        // Prevent variable name mangling that causes initialization issues
+        keep_fnames: true,
+        keep_classnames: true
+      },
+      mangle: false
+    },
     rollupOptions: {
       output: {
-        // Don't bundle cornerstone libraries together to avoid circular dependency issues
+        // Preserve module structure to avoid hoisting issues
+        preserveModules: false,
+        hoistTransitiveImports: false,
         manualChunks(id) {
-          if (id.includes('@cornerstonejs/core')) {
+          // Keep each cornerstone package separate
+          if (id.includes('node_modules/@cornerstonejs/core')) {
             return 'cornerstone-core'
           }
-          if (id.includes('@cornerstonejs/tools')) {
+          if (id.includes('node_modules/@cornerstonejs/tools')) {
             return 'cornerstone-tools'
           }
-          if (id.includes('@cornerstonejs/dicom-image-loader')) {
+          if (id.includes('node_modules/@cornerstonejs/dicom-image-loader')) {
             return 'cornerstone-loader'
+          }
+          if (id.includes('node_modules/dicom-parser')) {
+            return 'dicom-parser'
+          }
+          // Separate vendor chunk for other dependencies
+          if (id.includes('node_modules')) {
+            return 'vendor'
           }
         }
       }
