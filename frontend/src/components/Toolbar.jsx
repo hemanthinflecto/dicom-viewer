@@ -17,12 +17,10 @@ const ToolButton = ({ active, onClick, children, title, shortcut = null }) => (
 export const Toolbar = ({ activeTool, onToolChange, onResetView }) => {
   const tools = [
     { id: 'Pan', label: 'Pan', icon: '✋', shortcut: 'Left-click & drag' },
-    { id: 'Zoom', label: 'Zoom', icon: '🔍', shortcut: 'Left-drag ↑/↓' },
-    { id: 'WindowLevel', label: 'W/L', icon: '☀️', shortcut: 'Right-click & drag' },
+    { id: 'Zoom', label: 'Zoom', icon: '🔍', shortcut: 'Left-click & drag' },
     { id: 'Length', label: 'Length', icon: '📏', shortcut: 'Left-click start/end' },
-    { id: 'RectangleROI', label: 'Rectangle', icon: '◻️', shortcut: 'Left-click & drag' },
-    { id: 'EllipticalROI', label: 'Ellipse', icon: '⭕', shortcut: 'Left-click & drag' },
-    { id: 'Angle', label: 'Angle', icon: '📐', shortcut: 'Left-click 3 points' },
+    { id: 'RectangleRoi', label: 'Rectangle', icon: '◻️', shortcut: 'Left-click & drag' },
+    { id: 'EllipticalRoi', label: 'Ellipse', icon: '⭕', shortcut: 'Left-click & drag' },
   ];
 
   return (

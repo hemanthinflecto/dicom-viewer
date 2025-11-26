@@ -41,3 +41,49 @@ code {
 ::-webkit-scrollbar-thumb:hover {
   background: #64748b;
 }
+
+/* Cornerstone Tools Styles */
+.cornerstone-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* SVG layer for tool rendering */
+svg.cornerstone-canvas {
+  pointer-events: none;
+}
+
+/* Tool text and measurements */
+.cornerstoneTools text {
+  fill: #00ff00;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+}
+
+/* Tool lines */
+.cornerstoneTools line {
+  stroke: #00ff00;
+  stroke-width: 2;
+}
+
+/* Tool rectangles and shapes */
+.cornerstoneTools rect,
+.cornerstoneTools ellipse,
+.cornerstoneTools circle {
+  stroke: #00ff00;
+  stroke-width: 2;
+  fill: none;
+}
+
+/* Tool handles */
+.cornerstoneTools .handle {
+  fill: #00ff00;
+  stroke: #000;
+  stroke-width: 1;
+}
+
+.cornerstoneTools .handle:hover {
+  fill: #ffff00;
+  cursor: pointer;
+}
