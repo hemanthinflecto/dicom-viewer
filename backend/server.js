@@ -121,9 +121,9 @@ IMPORTANT: Always return valid JSON. If image is unclear, state that in the resp
             {
               type: 'text',
               text: `Analyze this medical imaging slice:
-- File: ${fileName || 'Unknown'}
-- Slice: ${sliceIndex + 1} of ${totalSlices}
-- Assessment Type: BASELINE ASSESSMENT
+ - File: ${fileName || 'Unknown'}
+ - Slice: ${sliceIndex + 1} of ${totalSlices}
+ - Assessment Type: BASELINE ASSESSMENT
 
 Please provide:
 1. The anatomical region/organ visible
@@ -143,6 +143,10 @@ Return response as JSON only.`
               }
             }
           ]
+        },
+        {
+          role: 'user',
+          content: `I am radiologist interpreting the Brain MRI scan, analyze the attached MRI scans of the brain of the person. Provide me the interpretation with the findings and possible diagnosis and if an oncologist consultation should be recommended for this patient. Interpret the image considering how a professional radiologist would examine the scan and provide the scan analysis report. Additional details, this report is of a female patient aged 74, the brief anamnesis of the disease (complaints) include dizziness, memory loss, weakness, numbness in the lower/upper extremities (left arm, left leg). There are a total of 27 scan images, I will upload them as sets, Attaching the set 14 images here.`
         }
       ]
     });
